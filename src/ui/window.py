@@ -270,6 +270,18 @@ class ClipboardWindow(Gtk.ApplicationWindow):
         # the very first one.
         self.connect('map', self._on_map)
 
+        # Trim on the way back to the tray, via 'unmap' rather than
+        # 'close-request' so it covers hiding by global shortcut too, not just
+        # the window button. Worth little on its own — measured 0.6MB, because
+        # showing the window costs ~43MB that is not reclaimable this way:
+        # ~27MB is live GTK/GSK render state, the rest is librsvg, the GPU
+        # driver, and font caches, all of which load once and stay for the
+        # life of the process. Neither unrealize() nor dropping every row
+        # widget moved it either (both measured, both ~0.5MB). Kept because
+        # it is nearly free and does reclaim the little that is reclaimable;
+        # the real win from trim_memory() is after the startup decode burst.
+        self.connect('unmap', self._on_unmap)
+
         # Keyboard: Ctrl+F search, Up/Down through rows, Enter copy, Esc dismiss.
         # Capture phase so these win before the focused widget consumes them.
         key_controller = Gtk.EventControllerKey()
@@ -402,6 +414,9 @@ class ClipboardWindow(Gtk.ApplicationWindow):
         self._history_dirty = True
         if self.get_mapped():
             self.refresh_list(self.search_entry.get_text())
+
+    def _on_unmap(self, *_args):
+        utils.trim_memory()
 
     def _on_map(self, *_args):
         if self._history_dirty:
@@ -672,11 +687,9 @@ class ClipboardWindow(Gtk.ApplicationWindow):
 
     def _on_close_request(self, window):
         if settings.get("closeToTray"):
+            # hide() unmaps, and _on_unmap() does the memory trim for every
+            # hide route, so there is nothing extra to do here.
             self.hide()
-            # Back to sitting in the tray: give back whatever the session of
-            # browsing/searching just churned through, rather than holding a
-            # browsing-sized heap for the rest of the day.
-            utils.trim_memory()
             return True
         else:
             self.get_application().quit()
