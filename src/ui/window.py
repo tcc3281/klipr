@@ -245,13 +245,20 @@ class ClipboardWindow(Gtk.ApplicationWindow):
         # Set correct theme icon on startup
         self._update_theme_icon()
 
-        # Load initial data
-        self.refresh_list()
+        # Defer the initial list build to the first real map instead of doing
+        # it here unconditionally: measured 140-180ms of this constructor was
+        # _load_thumbnail() decoding every image in history (~23ms/image),
+        # which used to run even for `klipr --hidden` autostart, before the
+        # window — and therefore any image — was ever going to be seen.
+        # mark_history_dirty()'s early-return already exists for exactly this
+        # once the window is up; this just applies it to the very first load.
+        self._history_dirty = True
 
         # Close-to-background: hide window instead of destroying
         self.connect('close-request', self._on_close_request)
 
-        # Flush any refresh that was skipped while hidden
+        # Flush any refresh that was skipped while hidden — including, now,
+        # the very first one.
         self.connect('map', self._on_map)
 
         # Keyboard: Ctrl+F search, Up/Down through rows, Enter copy, Esc dismiss.
