@@ -17,7 +17,8 @@ import os
 import struct
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gio, GLib
+gi.require_version("GdkPixbuf", "2.0")
+from gi.repository import Gio, GLib, GdkPixbuf
 
 
 # ── D-Bus interface XML ──────────────────────────────────────────
@@ -187,21 +188,31 @@ class TrayIcon:
             if not os.path.exists(path):
                 continue
             try:
-                from PIL import Image
-                with Image.open(path) as img:
-                    # Resize to 22x22 (standard tray icon size)
-                    img = img.resize((22, 22), Image.LANCZOS).convert("RGBA")
-                    w, h = img.size
-                    pixels = img.load()
+                # GdkPixbuf rather than PIL: this is the only thing that
+                # pulled PIL into the tray-icon path at startup, and importing
+                # PIL costs ~5MB RSS (measured) for what amounts to one 22x22
+                # resize. GdkPixbuf is already resident — the app links GTK
+                # regardless — so this is the same work for free.
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(path, 22, 22, True)
+                if not pixbuf.get_has_alpha():
+                    pixbuf = pixbuf.add_alpha(False, 0, 0, 0)
 
-                    # Convert RGBA → ARGB (network byte order / big-endian)
-                    argb_data = bytearray()
-                    for y in range(h):
-                        for x in range(w):
-                            r, g, b, a = pixels[x, y]
-                            argb_data.extend(struct.pack(">I", (a << 24) | (r << 16) | (g << 8) | b))
+                w = pixbuf.get_width()
+                h = pixbuf.get_height()
+                rowstride = pixbuf.get_rowstride()
+                n_channels = pixbuf.get_n_channels()
+                src = pixbuf.get_pixels()
 
-                    self._icon_pixmap = GLib.Variant("a(iiay)", [(w, h, bytes(argb_data))])
+                # Convert RGBA → ARGB (network byte order / big-endian)
+                argb_data = bytearray()
+                for y in range(h):
+                    row = y * rowstride
+                    for x in range(w):
+                        off = row + x * n_channels
+                        r, g, b, a = src[off], src[off + 1], src[off + 2], src[off + 3]
+                        argb_data.extend(struct.pack(">I", (a << 24) | (r << 16) | (g << 8) | b))
+
+                self._icon_pixmap = GLib.Variant("a(iiay)", [(w, h, bytes(argb_data))])
                 return
             except Exception as e:
                 print(f"Tray: failed to load icon pixmap from {path}: {e}")

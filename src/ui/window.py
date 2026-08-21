@@ -384,6 +384,11 @@ class ClipboardWindow(Gtk.ApplicationWindow):
         """
         if self._history_dirty:
             self.refresh_list(self.search_entry.get_text())
+        # The decode burst above frees far more than it keeps; without this
+        # glibc sits on that freed space for hours (measured 119MB held vs
+        # 104MB after trimming) even though the app is idle in the tray from
+        # here on.
+        utils.trim_memory()
         return False
 
     def mark_history_dirty(self):
@@ -668,6 +673,10 @@ class ClipboardWindow(Gtk.ApplicationWindow):
     def _on_close_request(self, window):
         if settings.get("closeToTray"):
             self.hide()
+            # Back to sitting in the tray: give back whatever the session of
+            # browsing/searching just churned through, rather than holding a
+            # browsing-sized heap for the rest of the day.
+            utils.trim_memory()
             return True
         else:
             self.get_application().quit()
