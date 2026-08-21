@@ -17,16 +17,16 @@ const translations = {
         'hero.desc': 'Klipr captures everything you copy — text, code, commands, and screenshots. Native GTK4 desktop integration, zero Electron bloat, and instant fuzzy search.',
         'hero.install_guide': 'Install Now',
         'hero.download_deb': 'Download .deb',
-        'hero.pill_free': '100% Free & Open Source',
-        'hero.pill_gtk': 'Native GTK4 (~41MB RAM idle)',
-        'hero.pill_privacy': '100% Offline & Private',
+        'hero.pill_free': 'Open Source',
+        'hero.pill_gtk': 'Native GTK4 (~41MB RAM)',
+        'hero.pill_privacy': 'Offline & Private',
         'hero.pill_no_account': 'No Account Required',
 
-        'promise.tag': '100% Free & Open Source',
-        'promise.title': 'Free forever without catches or compromises',
-        'promise.subtitle': 'Klipr is built as an open utility for the Linux community. No paywalls, no monetization, no tracking.',
-        'promise.c1_title': 'Free Forever',
-        'promise.c1_desc': 'No paid tiers, no pro subscriptions, and no locked features. Everything is free for everyone.',
+        'promise.tag': 'Open Source',
+        'promise.title': 'Built openly for the Linux community',
+        'promise.subtitle': 'Klipr is lightweight and transparent. No paywalls, no monetization, no tracking.',
+        'promise.c1_title': 'Community Driven',
+        'promise.c1_desc': 'No paid tiers, subscriptions, or locked features. Built as an open tool for everyone.',
         'promise.c2_title': 'Zero Advertisements',
         'promise.c2_desc': 'No sponsored banners, no upgrade prompts, and no annoying popups. Clean and focused.',
         'promise.c3_title': 'Offline & Private',
@@ -67,27 +67,21 @@ const translations = {
         'faq.tag': 'FAQ',
         'faq.title': 'Frequently Asked Questions',
         'faq.subtitle': 'Quick answers to common questions about Klipr.',
-        'faq.q0': 'Is Klipr really 100% free? Are there any hidden fees or Pro tiers?',
-        'faq.a0': 'Yes. Klipr is free and open source under the MIT license — no paid tiers, no subscriptions, no ads, and no locked features. Free for personal and commercial use.',
-        'faq.q1': 'Which Linux distributions and desktops are supported?',
-        'faq.a1': 'Klipr ships as a `.deb` for Ubuntu 22.04+, Debian 12+, Linux Mint and Pop!_OS, and runs from source on any distro with Python 3.10+, GTK4 and PyGObject. Note that it runs on X11 only — on a Wayland session it launches through XWayland.',
-        'faq.q2': 'Is my clipboard data sent anywhere?',
-        'faq.a2': 'No. Klipr contains no networking code at all — nothing is uploaded, and there is no telemetry or tracking. History lives in a local SQLite file at `~/.local/share/klipr/clipboard.db`. Be aware that, like most clipboard managers, this file is not encrypted, so treat it as you would any other file in your home directory.',
-        'faq.q3': 'Can I change the global toggle shortcut?',
-        'faq.a3': 'Yes, from the in-app Settings dialog, or by editing the `"shortcut"` field in `~/.config/klipr/setting.json` (default: `Ctrl+Alt+M`). The hotkey is registered as a GNOME custom keybinding, so on non-GNOME desktops you will need to bind the `klipr --toggle` command yourself in your desktop\'s keyboard settings.',
-        'faq.q4': 'How many items does Klipr keep?',
-        'faq.a4': 'The Settings dialog offers a history limit of 50, 100 or 150 items. Once the limit is reached, the oldest entries are pruned automatically as new ones arrive.',
-        'faq.q5': 'Are my pinned favorites deleted when the history fills up?',
-        'faq.a5': 'No. Favorites are stored in a separate table that automatic pruning never touches, so a pinned snippet stays until you remove it yourself.',
-        'faq.q6': 'How are copied images stored?',
-        'faq.a6': 'Copied images are written as PNG files to `~/.cache/klipr/images/` and referenced from the history database. Identical images are de-duplicated by content hash, and the list shows a downscaled thumbnail rather than holding the full-resolution image in memory. Files are deleted once no history entry or favorite references them.',
-        'faq.q7': 'The tray icon does not appear — what is wrong?',
-        'faq.a7': 'Klipr implements the StatusNotifierItem (SNI) tray protocol, which needs a tray host on your desktop. KDE Plasma, XFCE, Cinnamon and MATE support it out of the box; on GNOME install `gnome-shell-extension-appindicator` and enable it. You can still open the window with the global shortcut or by running `klipr --toggle`.',
-        'faq.q8': 'Does closing the window quit Klipr?',
-        'faq.a8': 'No. By default closing the window hides it to the tray so clipboard capture keeps running. Turn off "Close to tray" in Settings if you would rather have the window close quit the app; you can always quit from the tray menu.',
+        'faq.q0': 'Is Klipr completely free to use?',
+        'faq.a0': 'Yes. Klipr is free and open-source under the MIT License. There are no paid tiers, subscriptions, or ads.',
+        'faq.q1': 'Is my clipboard data private and secure?',
+        'faq.a1': 'Yes. Klipr runs completely offline. All history is saved locally on your device in a SQLite database and is never sent across the internet.',
+        'faq.q2': 'How do I open Klipr with a keyboard shortcut?',
+        'faq.a2': 'The default global shortcut is Ctrl+Alt+M. You can easily customize it to any combination you prefer (such as Super+V) in the Settings dialog.',
+        'faq.q3': 'Will my pinned favorite items be deleted over time?',
+        'faq.a3': 'No. Pinned favorites are stored separately and protected from automatic history cleanup. They stay pinned until you manually unstar them.',
+        'faq.q4': 'Does Klipr support saving images and screenshots?',
+        'faq.a4': 'Yes. Whenever you copy an image or take a screenshot, Klipr stores it with an instant thumbnail preview so you can paste it back whenever you need.',
+        'faq.q5': 'Does Klipr continue running in the background when closed?',
+        'faq.a5': 'Yes. Closing the window minimizes Klipr to your system tray so clipboard capture stays active. You can customize this behavior in Settings or quit from the tray menu.',
 
-        'footer.crafted': 'Klipr &bull; Crafted with passion by',
-        'footer.free_note': '100% Free &amp; Open Source forever under the MIT License.',
+        'footer.crafted': 'Klipr &bull; Created by',
+        'footer.free_note': 'Open Source under the MIT License.',
         'footer.repo': 'GitHub Repository',
         'footer.releases': 'Releases',
         'footer.license': 'MIT License',
@@ -107,15 +101,15 @@ const translations = {
         'hero.desc': 'Klipr tự động lưu lại mọi nội dung bạn sao chép — văn bản, mã nguồn, lệnh terminal và ảnh chụp màn hình. Tích hợp GTK4 native, không dùng Electron nặng nề, tìm kiếm siêu nhanh.',
         'hero.install_guide': 'Cài đặt ngay',
         'hero.download_deb': 'Tải gói .deb',
-        'hero.pill_free': '100% Miễn phí & Mã nguồn mở',
-        'hero.pill_gtk': 'GTK4 Native (~41MB RAM khi rảnh)',
-        'hero.pill_privacy': '100% Offline & Bảo mật',
+        'hero.pill_free': 'Mã nguồn mở',
+        'hero.pill_gtk': 'GTK4 Native (~41MB RAM)',
+        'hero.pill_privacy': 'Offline & Bảo mật',
         'hero.pill_no_account': 'Không cần tài khoản',
 
-        'promise.tag': 'Cam kết Miễn phí 100%',
-        'promise.title': 'Miễn phí thực sự, không bẫy trả phí',
-        'promise.subtitle': 'Klipr được xây dựng như một công cụ hữu ích hoàn toàn miễn phí phục vụ cộng đồng Linux.',
-        'promise.c1_title': 'Miễn phí vĩnh viễn',
+        'promise.tag': 'Mã nguồn mở',
+        'promise.title': 'Mã nguồn mở và minh bạch',
+        'promise.subtitle': 'Klipr được phát triển công khai cho cộng đồng Linux. Không thu phí, không theo dõi.',
+        'promise.c1_title': 'Hoàn toàn mở',
         'promise.c1_desc': 'Không có bản Pro, không thu phí bản quyền, không khóa tính năng. Mọi tính năng đều miễn phí cho tất cả mọi người.',
         'promise.c2_title': 'Không quảng cáo',
         'promise.c2_desc': 'Không pop-up mời nâng cấp, không banner quảng cáo, không làm phiền trải nghiệm làm việc của bạn.',
@@ -157,27 +151,21 @@ const translations = {
         'faq.tag': 'Hỏi & Đáp',
         'faq.title': 'Câu hỏi thường gặp',
         'faq.subtitle': 'Giải đáp nhanh các thắc mắc phổ biến về Klipr.',
-        'faq.q0': 'Klipr có thực sự miễn phí 100% không? Có phí ẩn hay bản Pro không?',
-        'faq.a0': 'Có. Klipr miễn phí và mã nguồn mở theo giấy phép MIT — không có bản trả phí, không thuê bao, không quảng cáo, không khoá tính năng. Dùng thoải mái cho cả cá nhân lẫn thương mại.',
-        'faq.q1': 'Klipr hỗ trợ những bản phân phối và desktop nào?',
-        'faq.a1': 'Klipr đóng gói `.deb` cho Ubuntu 22.04+, Debian 12+, Linux Mint và Pop!_OS, đồng thời chạy được từ mã nguồn trên mọi distro có Python 3.10+, GTK4 và PyGObject. Lưu ý app chỉ chạy trên X11 — nếu bạn đang dùng phiên Wayland thì nó chạy thông qua XWayland.',
-        'faq.q2': 'Dữ liệu clipboard của tôi có bị gửi đi đâu không?',
-        'faq.a2': 'Không. Klipr hoàn toàn không có mã kết nối mạng — không gửi gì lên đâu, không thu thập dữ liệu. Lịch sử nằm trong file SQLite cục bộ tại `~/.local/share/klipr/clipboard.db`. Cần lưu ý file này không được mã hoá (giống hầu hết app clipboard khác), nên hãy đối xử với nó như mọi file khác trong thư mục home.',
-        'faq.q3': 'Tôi đổi được phím tắt mở nhanh không?',
-        'faq.a3': 'Được, đổi trong bảng Cài đặt của app hoặc sửa trường `"shortcut"` trong `~/.config/klipr/setting.json` (mặc định `Ctrl+Alt+M`). Phím tắt được đăng ký dưới dạng custom keybinding của GNOME, nên trên desktop không phải GNOME bạn cần tự gán lệnh `klipr --toggle` trong cài đặt bàn phím của desktop đó.',
-        'faq.q4': 'Klipr lưu được bao nhiêu mục?',
-        'faq.a4': 'Bảng Cài đặt cho chọn giới hạn 50, 100 hoặc 150 mục. Khi đạt giới hạn, các mục cũ nhất sẽ tự động bị xoá bớt khi có mục mới.',
-        'faq.q5': 'Mục đã ghim có bị xoá khi lịch sử đầy không?',
-        'faq.a5': 'Không. Mục yêu thích được lưu ở bảng riêng mà cơ chế tự động dọn không bao giờ đụng tới, nên đã ghim là còn cho tới khi bạn tự xoá.',
-        'faq.q6': 'Ảnh sao chép được lưu như thế nào?',
-        'faq.a6': 'Ảnh sao chép được ghi thành file PNG trong `~/.cache/klipr/images/` và được tham chiếu từ cơ sở dữ liệu lịch sử. Ảnh trùng nhau được khử trùng lặp bằng mã băm nội dung, và danh sách chỉ hiển thị ảnh thu nhỏ thay vì giữ ảnh gốc trong bộ nhớ. File sẽ được xoá khi không còn mục lịch sử hay mục yêu thích nào tham chiếu tới.',
-        'faq.q7': 'Không thấy biểu tượng ở khay hệ thống thì sao?',
-        'faq.a7': 'Klipr dùng giao thức khay StatusNotifierItem (SNI), giao thức này cần desktop có sẵn tray host. KDE Plasma, XFCE, Cinnamon và MATE hỗ trợ sẵn; riêng GNOME cần cài `gnome-shell-extension-appindicator` rồi bật lên. Trong lúc đó bạn vẫn mở được cửa sổ bằng phím tắt hoặc lệnh `klipr --toggle`.',
-        'faq.q8': 'Đóng cửa sổ thì Klipr có thoát hẳn không?',
-        'faq.a8': 'Không. Mặc định đóng cửa sổ chỉ ẩn xuống khay để việc ghi nhận clipboard vẫn tiếp tục. Nếu muốn đóng là thoát hẳn, tắt tuỳ chọn "Close to tray" trong Cài đặt; bạn cũng luôn có thể thoát từ menu ở khay.',
+        'faq.q0': 'Klipr có miễn phí hoàn toàn không?',
+        'faq.a0': 'Có. Klipr hoàn toàn miễn phí và là phần mềm mã nguồn mở theo giấy phép MIT. Không có bản trả phí, không thuê bao và không quảng cáo.',
+        'faq.q1': 'Dữ liệu clipboard có được bảo mật và an toàn không?',
+        'faq.a1': 'Có. Klipr hoạt động hoàn toàn offline. Toàn bộ lịch sử clipboard được lưu cục bộ trên máy bạn trong SQLite và tuyệt đối không gửi hay thu thập dữ liệu qua mạng.',
+        'faq.q2': 'Làm cách nào để mở nhanh Klipr bằng phím tắt?',
+        'faq.a2': 'Phím tắt mặc định là Ctrl+Alt+M. Bạn có thể tuỳ chỉnh phím tắt này bất kỳ lúc nào trong bảng Cài đặt để phù hợp với thói quen sử dụng (ví dụ: Super+V).',
+        'faq.q3': 'Các mục đã ghim có bị xoá khi lịch sử đầy không?',
+        'faq.a3': 'Không. Các mục ghim yêu thích được lưu riêng biệt và không bao giờ bị xóa tự động khi đạt đến giới hạn số lượng mục.',
+        'faq.q4': 'Klipr có lưu được ảnh và ảnh chụp màn hình không?',
+        'faq.a4': 'Có. Khi bạn sao chép hình ảnh hoặc chụp màn hình, Klipr tự động lưu trữ và hiển thị thumbnail trực quan để bạn dán lại nhanh chóng.',
+        'faq.q5': 'Klipr có tiếp tục chạy ngầm khi đóng cửa sổ không?',
+        'faq.a5': 'Có. Mặc định khi đóng cửa sổ, Klipr sẽ ẩn xuống khay hệ thống để tiếp tục ghi nhận clipboard. Bạn có thể thay đổi tùy chọn này trong Cài đặt hoặc thoát hoàn toàn từ menu khay hệ thống.',
 
         'footer.crafted': 'Klipr &bull; Phát triển bởi',
-        'footer.free_note': '100% Miễn phí &amp; Mã nguồn mở vĩnh viễn theo giấy phép MIT.',
+        'footer.free_note': 'Mã nguồn mở theo giấy phép MIT.',
         'footer.repo': 'Kho mã nguồn GitHub',
         'footer.releases': 'Các bản phát hành',
         'footer.license': 'Giấy phép MIT',
@@ -202,7 +190,7 @@ function safeSetStorage(key, val) {
 }
 
 let currentLang = safeGetStorage('klipr_lang', 'en');
-let currentReleaseTag = 'v1.2.4';
+let currentReleaseTag = 'v1.2.5';
 
 /**
  * Public function to set language
@@ -213,11 +201,7 @@ window.setLanguage = function(lang) {
     safeSetStorage('klipr_lang', lang);
     document.documentElement.lang = lang;
 
-    if (lang === 'vi') {
-        document.title = 'Klipr — Quản lý lịch sử Clipboard cho Linux (100% Miễn phí & GTK4 Native)';
-    } else {
-        document.title = 'Klipr — 100% Free, Native GTK4 Clipboard History for Linux';
-    }
+    document.title = 'Klipr - Linux Clipboard Manager';
 
     // Update active button state
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -477,7 +461,7 @@ async function fetchLatestRelease() {
         if (!response.ok) return;
 
         const release = await response.json();
-        currentReleaseTag = release.tag_name || 'v1.2.4';
+        currentReleaseTag = release.tag_name || 'v1.2.5';
         updateVersionBadge();
 
         const debAsset = release.assets?.find(asset => asset.name.endsWith('.deb'));
