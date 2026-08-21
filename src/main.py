@@ -17,7 +17,7 @@ from database import (
     add_to_favorites, remove_from_favorites, is_favorite,
     update_favorite_name,
     clear_history, clear_favorites, get_counts,
-    prune_orphaned_images
+    prune_orphaned_images, close_connection
 )
 from clipboard_manager import ClipboardManager
 from ui.window import ClipboardWindow
@@ -173,7 +173,8 @@ class ClipboardApp(Gtk.Application):
                 monitor.cancel()
         if hasattr(self, 'settings_monitor'):
             self.settings_monitor.cancel()
-            
+        close_connection()
+
         Gtk.Application.do_shutdown(self)
 
     def _tray_open(self):
