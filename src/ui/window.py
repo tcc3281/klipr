@@ -245,14 +245,23 @@ class ClipboardWindow(Gtk.ApplicationWindow):
         # Set correct theme icon on startup
         self._update_theme_icon()
 
-        # Defer the initial list build to the first real map instead of doing
-        # it here unconditionally: measured 140-180ms of this constructor was
-        # _load_thumbnail() decoding every image in history (~23ms/image),
-        # which used to run even for `klipr --hidden` autostart, before the
-        # window — and therefore any image — was ever going to be seen.
-        # mark_history_dirty()'s early-return already exists for exactly this
-        # once the window is up; this just applies it to the very first load.
+        # Defer the initial list build off the constructor (measured
+        # 140-180ms decoding every image in history via _load_thumbnail(),
+        # ~23ms/image, even for `klipr --hidden` autostart before any image
+        # was ever going to be seen) — but NOT all the way to the first real
+        # map. That was tried first and measured worse for the thing that
+        # actually matters: the first press of the global shortcut after
+        # login went from 140ms to 230ms, because the same decode work that
+        # used to happen silently during boot now happened synchronously
+        # while the user was actively waiting on it. Prefetching once on
+        # GLib's idle queue instead runs it in the gap between "app finished
+        # starting" and "user's first interaction" — background time either
+        # way, but before it's needed rather than blocking when it's needed.
+        # If the window gets mapped before the idle callback runs anyway,
+        # _on_map() below already does the refresh and clears the flag, so
+        # this checks it again rather than assuming it still needs to run.
         self._history_dirty = True
+        GLib.idle_add(self._prefetch_history)
 
         # Close-to-background: hide window instead of destroying
         self.connect('close-request', self._on_close_request)
@@ -364,6 +373,18 @@ class ClipboardWindow(Gtk.ApplicationWindow):
         dialog.present()
 
     # ── Data & List ─────────────────────────────────────────────────
+
+    def _prefetch_history(self):
+        """One-shot idle-time warmup of the list the constructor deferred.
+
+        Runs once, whenever GLib next has nothing better to do after startup.
+        If the window was already mapped and refreshed by then, refresh_list()
+        already cleared _history_dirty, so this is a no-op — never a redundant
+        second decode.
+        """
+        if self._history_dirty:
+            self.refresh_list(self.search_entry.get_text())
+        return False
 
     def mark_history_dirty(self):
         """Note that stored history changed; rebuild only if the user can see it.
