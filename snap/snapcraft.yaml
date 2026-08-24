@@ -17,11 +17,19 @@ apps:
     command: bin/klipr
     extensions: [gnome]
     desktop: usr/share/applications/io.github.nguyenduc2309.klipr.desktop
+    slots:
+      - dbus-klipr
     plugs:
       # desktop, desktop-legacy, wayland, x11, gsettings are already added by
       # the gnome extension above — unity7 is what a StatusNotifierItem tray
       # icon additionally needs on strict confinement.
       - unity7
+
+slots:
+  dbus-klipr:
+    interface: dbus
+    bus: session
+    name: snap.klipr
 
 parts:
   klipr:
@@ -35,9 +43,15 @@ parts:
       - python3-gi-cairo
       - gir1.2-gtk-4.0
       - python3-pil
+      - gnome-settings-daemon-common
+      - libglib2.0-bin
     override-build: |
       set -eu
       craftctl default
+
+      if [ -d "$CRAFT_PART_INSTALL/usr/share/glib-2.0/schemas" ]; then
+        glib-compile-schemas "$CRAFT_PART_INSTALL/usr/share/glib-2.0/schemas" || true
+      fi
 
       DEST="$CRAFT_PART_INSTALL/usr/share/klipr"
       mkdir -p "$DEST/ui" "$DEST/assets"
@@ -50,6 +64,7 @@ parts:
       mkdir -p "$CRAFT_PART_INSTALL/bin"
       cat > "$CRAFT_PART_INSTALL/bin/klipr" <<'LAUNCHER'
       #!/bin/sh
+      export PYTHONPATH="$SNAP/usr/lib/python3/dist-packages:$SNAP/usr/lib/python3.12/dist-packages:$SNAP/usr/share/klipr:${PYTHONPATH:-}"
       cd "$SNAP/usr/share/klipr"
       exec python3 main.py "$@"
       LAUNCHER

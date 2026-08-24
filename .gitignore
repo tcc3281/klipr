@@ -28,6 +28,16 @@ dist/
 # separate artifact host — the committed .deb IS the download).
 !landing/apt/pool/**/*.deb
 
+# Snap build artifacts
+parts/
+stage/
+prime/
+.craft/
+.snapcraft/
+*.snap
+*.rock
+
+
 # Database (created at runtime, not shipped)
 *.db
 
@@ -41,11 +51,19 @@ log.txt
 # Settings (user-specific, created at runtime)
 settings.json
 
+# Documentation / Internal Notes
 .agent
 .claude/
 CLAUDE.md
 claude.md
 PUBLISH.md
 publish.md
+PACKAGING.md
+packaging.md
+SNAP.md
+snap.md
+DEBIAN-SUBMISSION.md
+debian-submission.md
+*submission*.md
 scripts/
 packaging/publish_apt.sh

@@ -178,9 +178,14 @@ class TrayIcon:
         This ensures the tray icon shows even if the named icon isn't in the theme.
         """
         icon_paths = [
+            # Snap location
+            os.path.join(os.environ.get("SNAP", ""), "usr/share/icons/hicolor/128x128/apps/klipr.png"),
+            os.path.join(os.environ.get("SNAP", ""), "usr/share/klipr/assets/logo.png"),
             # Installed location
             "/usr/share/icons/hicolor/128x128/apps/klipr.png",
-            # Dev location
+            # Dev & package location
+            os.path.join(os.path.dirname(__file__), "assets", "logo.png"),
+            os.path.join(os.path.dirname(__file__), "..", "assets", "logo.png"),
             os.path.join(os.path.dirname(__file__), "..", "packaging", "klipr.png"),
         ]
 

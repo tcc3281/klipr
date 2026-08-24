@@ -81,15 +81,25 @@ class SettingsView(Gtk.Box):
         limit_label.set_halign(Gtk.Align.START)
         general_grid.attach(limit_label, 0, 0, 1, 1)
 
-        limit_model = Gtk.StringList()
-        limit_model.append("50")
-        limit_model.append("100")
-        limit_model.append("150")
-        
-        self.limit_dropdown = Gtk.DropDown(model=limit_model)
-        self.limit_dropdown.set_halign(Gtk.Align.END)
-        self.limit_dropdown.set_hexpand(True)
-        general_grid.attach(self.limit_dropdown, 1, 0, 1, 1)
+        limit_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=2)
+        limit_box.add_css_class("limit-pill-group")
+        limit_box.set_halign(Gtk.Align.END)
+        limit_box.set_hexpand(True)
+
+        self.btn_limit_50 = Gtk.ToggleButton(label="50")
+        self.btn_limit_50.add_css_class("limit-pill")
+        self.btn_limit_100 = Gtk.ToggleButton(label="100")
+        self.btn_limit_100.add_css_class("limit-pill")
+        self.btn_limit_150 = Gtk.ToggleButton(label="150")
+        self.btn_limit_150.add_css_class("limit-pill")
+
+        self.btn_limit_100.set_group(self.btn_limit_50)
+        self.btn_limit_150.set_group(self.btn_limit_50)
+
+        limit_box.append(self.btn_limit_50)
+        limit_box.append(self.btn_limit_100)
+        limit_box.append(self.btn_limit_150)
+        general_grid.attach(limit_box, 1, 0, 1, 1)
 
         self._add_section_header(vbox, "Shortcuts")
         shortcut_grid = Gtk.Grid()
@@ -412,12 +422,13 @@ class SettingsView(Gtk.Box):
         desc = s["description"]
         self.app_desc.set_label(f"{desc}\nVersion {version}")
 
-        limit = int(s["historyLimit"])
-        limit_map = {50: 0, 100: 1, 150: 2}
-        if limit not in limit_map:
-            raise ValueError(f"Unsupported historyLimit value: {limit}")
-        idx = limit_map[limit]
-        self.limit_dropdown.set_selected(idx)
+        limit = int(s.get("historyLimit", 50))
+        if limit == 100:
+            self.btn_limit_100.set_active(True)
+        elif limit == 150:
+            self.btn_limit_150.set_active(True)
+        else:
+            self.btn_limit_50.set_active(True)
             
         self.autostart_check.set_active(s["autostart"])
         self.close_tray_check.set_active(s["closeToTray"])
@@ -473,13 +484,12 @@ class SettingsView(Gtk.Box):
         self.on_close(False)
 
     def _on_save(self, btn):
-        selected_idx = self.limit_dropdown.get_selected()
-        if selected_idx == 0:
-            limit = 50
-        elif selected_idx == 1:
+        if self.btn_limit_100.get_active():
             limit = 100
-        else:
+        elif self.btn_limit_150.get_active():
             limit = 150
+        else:
+            limit = 50
         self.pending_settings["historyLimit"] = limit
         
         new_autostart_state = self.autostart_check.get_active()

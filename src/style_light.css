@@ -304,6 +304,38 @@ button.settings-restore-btn:active {
   background-color: #E2E8F0;
 }
 
+/* Segmented Limit Pill Selector */
+.limit-pill-group {
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  border: 1px solid #e2e8f0;
+}
+
+button.limit-pill {
+  background: transparent;
+  color: #64748b;
+  border: none;
+  border-radius: 6px;
+  padding: 3px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  min-height: 26px;
+  min-width: 44px;
+  transition: all 0.15s ease;
+}
+
+button.limit-pill:hover:not(:checked) {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+}
+
+button.limit-pill:checked {
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+}
+
 /* Dropdown & Combobox Styles */
 dropdown, 
 dropdown > button {

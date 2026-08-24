@@ -28,6 +28,10 @@ SHORTCUT_BASE = "org.gnome.settings-daemon.plugins.media-keys"
 SHORTCUT_CUSTOM_BASE = f"{SHORTCUT_BASE}.custom-keybinding"
 SHORTCUT_PATH = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/klipr/"
 
+is_snap = bool(os.environ.get("SNAP"))
+APP_ID = "snap.klipr" if is_snap else "io.github.nguyenduc2309.klipr"
+OBJECT_PATH = "/snap/klipr" if is_snap else "/io/github/nguyenduc2309/klipr"
+
 # Hits the already-running instance's "toggle-window" GAction over D-Bus
 # instead of relaunching a whole new python3 + GTK4 process just to hand off
 # to this one via the ordinary --toggle command-line path. Measured through
@@ -43,8 +47,8 @@ SHORTCUT_PATH = "/org/gnome/settings-daemon/plugins/media-keys/custom-keybinding
 # — i.e. before autostart has run once this login — since an unknown action
 # name on a name that *is* owned is not a D-Bus error, it's a silent no-op.
 SHORTCUT_COMMAND = (
-    'sh -c "gdbus call --session --dest io.github.nguyenduc2309.klipr '
-    '--object-path /io/github/nguyenduc2309/klipr '
+    f'sh -c "gdbus call --session --dest {APP_ID} '
+    f'--object-path {OBJECT_PATH} '
     "--method org.gtk.Actions.Activate toggle-window '[]' '{}' "
     '2>/dev/null || klipr --toggle"'
 )
@@ -53,7 +57,7 @@ SHORTCUT_COMMAND = (
 class ClipboardApp(Gtk.Application):
     def __init__(self):
         super().__init__(
-            application_id="io.github.nguyenduc2309.klipr",
+            application_id=APP_ID,
             flags=Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
         )
         self.window = None
@@ -218,7 +222,7 @@ class ClipboardApp(Gtk.Application):
             return False
 
         if self.window.get_visible():
-            self.window.hide()
+            self.window.set_visible(False)
         else:
             self.window.set_visible(True)
             self.window.present()
@@ -290,7 +294,7 @@ class ClipboardApp(Gtk.Application):
     def _ensure_shortcut_path(self):
         result = subprocess.run(
             ["gsettings", "get", SHORTCUT_BASE, "custom-keybindings"],
-            capture_output=True, text=True, timeout=3
+            capture_output=True, text=True, timeout=3, check=True
         )
         existing_raw = result.stdout.strip()
         if existing_raw.startswith("@as"):
@@ -308,13 +312,13 @@ class ClipboardApp(Gtk.Application):
         new_list = "[" + ", ".join(f"'{p}'" for p in existing) + "]"
         subprocess.run(
             ["gsettings", "set", SHORTCUT_BASE, "custom-keybindings", new_list],
-            timeout=3
+            capture_output=True, text=True, timeout=3, check=True
         )
 
     def _set_shortcut_property(self, key, value):
         subprocess.run(
             ["gsettings", "set", f"{SHORTCUT_CUSTOM_BASE}:{SHORTCUT_PATH}", key, value],
-            timeout=3
+            capture_output=True, text=True, timeout=3, check=True
         )
 
     def _disable_shortcut(self):
