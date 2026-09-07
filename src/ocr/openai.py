@@ -1,10 +1,8 @@
-import base64
 import json
-import mimetypes
 import os
 import urllib.error
 import urllib.request
-from .base import BaseOCRProvider
+from .base import BaseOCRProvider, prepare_image_payload
 
 
 class OpenAIProvider(BaseOCRProvider):
@@ -26,7 +24,7 @@ class OpenAIProvider(BaseOCRProvider):
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",
-                "User-Agent": "Klipr/1.2.5",
+                "User-Agent": "Klipr/1.2.7",
             },
             method="POST",
         )
@@ -37,19 +35,14 @@ class OpenAIProvider(BaseOCRProvider):
         with opener.open(req, timeout=30) as resp:
             return json.loads(resp.read().decode("utf-8"))
 
-    def extract_text(self, image_path: str) -> str:
+    def extract_text(self, image_path: str, preloaded_payload: tuple[str, str] = None) -> str:
         if not self.api_key:
             raise ValueError("OpenAI API Key is not set. Configure it in Klipr Settings -> AI OCR.")
 
-        if not os.path.isfile(image_path):
-            raise FileNotFoundError(f"Image not found at: {image_path}")
-
-        mime_type, _ = mimetypes.guess_type(image_path)
-        if not mime_type:
-            mime_type = "image/png"
-
-        with open(image_path, "rb") as f:
-            encoded_image = base64.b64encode(f.read()).decode("utf-8")
+        if preloaded_payload:
+            encoded_image, mime_type = preloaded_payload
+        else:
+            encoded_image, mime_type = prepare_image_payload(image_path)
 
         # Normalize endpoint (avoid duplicating /chat/completions if user included it)
         if self.base_url.endswith("/chat/completions"):
@@ -57,7 +50,8 @@ class OpenAIProvider(BaseOCRProvider):
         else:
             url = f"{self.base_url}/chat/completions"
 
-        print(f"[Klipr OCR] Calling OpenAI API (endpoint: {url}, model: {self.model}, image: {os.path.basename(image_path)}, mime: {mime_type})...")
+        kb_size = len(encoded_image) * 3 // 4 // 1024
+        print(f"[Klipr OCR] Calling OpenAI API (endpoint: {url}, model: {self.model}, payload: ~{kb_size} KB, mime: {mime_type})...")
 
         prompt_text = (
             "Extract all text from this image accurately. "
@@ -86,8 +80,8 @@ class OpenAIProvider(BaseOCRProvider):
                     ],
                 }
             ],
-            "max_tokens": 4096,
-            "temperature": 0.1,
+            "max_tokens": 2048,
+            "temperature": 0.0,
         }
 
         try:
@@ -106,8 +100,8 @@ class OpenAIProvider(BaseOCRProvider):
                             "images": [encoded_image],
                         }
                     ],
-                    "max_tokens": 4096,
-                    "temperature": 0.1,
+                    "max_tokens": 2048,
+                    "temperature": 0.0,
                 }
                 try:
                     data = self._send_request(go_payload, url)

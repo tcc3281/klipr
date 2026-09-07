@@ -1,10 +1,8 @@
-import base64
 import json
-import mimetypes
 import os
 import urllib.error
 import urllib.request
-from .base import BaseOCRProvider
+from .base import BaseOCRProvider, prepare_image_payload
 
 
 class GeminiProvider(BaseOCRProvider):
@@ -20,22 +18,18 @@ class GeminiProvider(BaseOCRProvider):
             m = m[:-5] + "flash"
         self.model = m
 
-    def extract_text(self, image_path: str) -> str:
+    def extract_text(self, image_path: str, preloaded_payload: tuple[str, str] = None) -> str:
         if not self.api_key:
             raise ValueError("Gemini API Key is not set. Configure it in Klipr Settings -> AI OCR.")
 
-        if not os.path.isfile(image_path):
-            raise FileNotFoundError(f"Image not found at: {image_path}")
-
-        mime_type, _ = mimetypes.guess_type(image_path)
-        if not mime_type:
-            mime_type = "image/png"
-
-        with open(image_path, "rb") as f:
-            encoded_image = base64.b64encode(f.read()).decode("utf-8")
+        if preloaded_payload:
+            encoded_image, mime_type = preloaded_payload
+        else:
+            encoded_image, mime_type = prepare_image_payload(image_path)
 
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent?key={self.api_key}"
-        print(f"[Klipr OCR] Calling Gemini API (model: {self.model}, image: {os.path.basename(image_path)}, mime: {mime_type})...")
+        kb_size = len(encoded_image) * 3 // 4 // 1024
+        print(f"[Klipr OCR] Calling Gemini API (model: {self.model}, payload: ~{kb_size} KB, mime: {mime_type})...")
 
         # Standard Google Gemini REST API format uses camelCase: inlineData and mimeType
         payload = {
@@ -59,7 +53,8 @@ class GeminiProvider(BaseOCRProvider):
                 }
             ],
             "generationConfig": {
-                "temperature": 0.1
+                "temperature": 0.0,
+                "maxOutputTokens": 2048,
             }
         }
 
@@ -69,7 +64,7 @@ class GeminiProvider(BaseOCRProvider):
             headers={
                 "Content-Type": "application/json",
                 "x-goog-api-key": self.api_key,
-                "User-Agent": "Klipr/1.2.5",
+                "User-Agent": "Klipr/1.2.7",
             },
             method="POST",
         )
